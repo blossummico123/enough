@@ -21,7 +21,7 @@ readability-lxml==0.8.1
 # Google APIs
 google-analytics-data==0.18.16
 google-api-python-client==2.159.0
-google-auth==2.37.0
+google-auth==2.49.1
 google-auth-oauthlib==1.2.1
 google-auth-httplib2==0.2.0
 
