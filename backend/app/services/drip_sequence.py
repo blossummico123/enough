@@ -149,7 +149,7 @@ class DripSequenceService:
         blog_name = audit_data.get("site_name", domain)
 
         subject = f"Your blog health score: {score}/100 — Audit Report"
-        html_body = self._email_1_html(blog_name, domain, score, rec_count)
+        html_body = self._email_1_html(blog_name, domain, score, rec_count, email)
 
         import resend
         resend.api_key = settings.resend_api_key
@@ -189,7 +189,7 @@ class DripSequenceService:
             return
 
         subject = f"Your blog health score: {score}/100 — Audit Report"
-        html_body = self._email_1_html(blog_name, domain, score, rec_count)
+        html_body = self._email_1_html(blog_name, domain, score, rec_count, email)
 
         import resend
         resend.api_key = settings.resend_api_key
@@ -238,7 +238,7 @@ class DripSequenceService:
 
         subject = f"Here's one of the {rec_count} fixes we found for {blog_name}"
         html_body = self._email_2_html(
-            blog_name, domain, score, rec_count, rec_title, rec_summary, post_title,
+            blog_name, domain, score, rec_count, rec_title, rec_summary, post_title, email,
         )
 
         import resend
@@ -271,7 +271,7 @@ class DripSequenceService:
             return
 
         subject = "Your blog is still fighting itself"
-        html_body = self._email_3_html(blog_name, domain, score, rec_count)
+        html_body = self._email_3_html(blog_name, domain, score, rec_count, email)
 
         import resend
         resend.api_key = settings.resend_api_key
@@ -307,7 +307,7 @@ class DripSequenceService:
   </div>
 </div>"""
 
-    def _email_1_html(self, blog_name: str, domain: str, score: int, rec_count: int) -> str:
+    def _email_1_html(self, blog_name: str, domain: str, score: int, rec_count: int, email: str = "") -> str:
         score_color = "#16a34a" if score >= 65 else "#ca8a04" if score >= 40 else "#dc2626"
         inner = f"""
   <h2 style="font-size:18px;margin:0 0 8px;color:#111827;">Your Blog Health Audit is Ready</h2>
@@ -323,11 +323,11 @@ class DripSequenceService:
     <li>Key findings about your content ecosystem</li>
   </ul>
   <p style="font-size:14px;color:#374151;">We also generated <strong>{rec_count} specific recommendations</strong> to improve your blog. Subscribe to see them all.</p>"""
-        return self._base_wrapper(inner)
+        return self._base_wrapper(inner, email)
 
     def _email_2_html(
         self, blog_name: str, domain: str, score: int, rec_count: int,
-        rec_title: str, rec_summary: str, post_title: str,
+        rec_title: str, rec_summary: str, post_title: str, email: str = "",
     ) -> str:
         inner = f"""
   <h2 style="font-size:18px;margin:0 0 8px;color:#111827;">One of {rec_count} Fixes for {blog_name}</h2>
@@ -339,9 +339,9 @@ class DripSequenceService:
   </div>
   <p style="font-size:14px;color:#374151;">This is just <strong>1 of {rec_count} recommendations</strong> we generated. Each one includes specific actions, estimated effort, and expected impact.</p>
   <p style="font-size:14px;color:#64748b;">Your blog scored <strong>{score}/100</strong>. Every point you gain means better rankings and more organic traffic.</p>"""
-        return self._base_wrapper(inner)
+        return self._base_wrapper(inner, email)
 
-    def _email_3_html(self, blog_name: str, domain: str, score: int, rec_count: int) -> str:
+    def _email_3_html(self, blog_name: str, domain: str, score: int, rec_count: int, email: str = "") -> str:
         inner = f"""
   <h2 style="font-size:18px;margin:0 0 8px;color:#111827;">Your Blog Is Still Fighting Itself</h2>
   <p style="color:#64748b;font-size:14px;">It's been 5 days since we audited <strong>{blog_name}</strong>, and nothing has changed.</p>
@@ -355,4 +355,4 @@ class DripSequenceService:
   <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;">
     <p style="font-size:12px;color:#64748b;">P.S. Know another content team or agency? Forward them this report &mdash; or have them request a free audit at <a href="https://enough.app" style="color:#16a34a;">enough.app</a>.</p>
   </div>"""
-        return self._base_wrapper(inner)
+        return self._base_wrapper(inner, email)
