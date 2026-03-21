@@ -6,11 +6,24 @@ import type { NextRequest } from 'next/server';
  * Reads the Supabase session token from localStorage is not possible in middleware
  * (no DOM access), so we check for the access_token cookie set by Supabase Auth.
  */
+// Dashboard pages rendered by the (dashboard) route group — these URLs
+// don't contain "(dashboard)" because it's a Next.js route group.
+const PROTECTED_PREFIXES = [
+  '/today', '/billing', '/explore', '/settings', '/overview',
+  '/oracle', '/briefs', '/clusters', '/posts', '/landscape',
+  '/cannibalization', '/consolidation', '/actions', '/issues',
+  '/competitors', '/impact', '/profile', '/calendar', '/wrapped',
+  '/dashboard',
+];
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only protect dashboard routes
-  if (!pathname.startsWith('/dashboard') && !pathname.startsWith('/(dashboard)')) {
+  const isProtected = PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+  if (!isProtected) {
     return NextResponse.next();
   }
 
@@ -35,9 +48,29 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths starting with /dashboard
+     * Match dashboard route group pages.
+     * The (dashboard) route group renders at these URL prefixes.
      * Excludes: _next/static, _next/image, favicon.ico, api routes
      */
+    '/today/:path*',
+    '/billing/:path*',
+    '/explore/:path*',
+    '/settings/:path*',
+    '/overview/:path*',
+    '/oracle/:path*',
+    '/briefs/:path*',
+    '/clusters/:path*',
+    '/posts/:path*',
+    '/landscape/:path*',
+    '/cannibalization/:path*',
+    '/consolidation/:path*',
+    '/actions/:path*',
+    '/issues/:path*',
+    '/competitors/:path*',
+    '/impact/:path*',
+    '/profile/:path*',
+    '/calendar/:path*',
+    '/wrapped/:path*',
     '/dashboard/:path*',
   ],
 };
