@@ -76,10 +76,13 @@ class DripSequenceService:
         for row in rows:
             try:
                 # Check email opt-out before sending
-                opted_out = await db.fetchval(
-                    "SELECT 1 FROM email_optouts WHERE email = $1",
-                    row["email"].lower().strip(),
-                )
+                try:
+                    opted_out = await db.fetchval(
+                        "SELECT 1 FROM email_optouts WHERE email = $1",
+                        row["email"].lower().strip(),
+                    )
+                except Exception:
+                    opted_out = False  # Table may not exist yet if migration 026 not applied
                 if opted_out:
                     await db.execute(
                         "UPDATE audit_drip_emails SET status = 'skipped', error = 'opted out' WHERE id = $1",

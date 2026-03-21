@@ -314,7 +314,7 @@ function ReanalyzeHeader({ siteId, token }: { siteId: string; token: string | nu
     if (!siteId || !token) return;
     setReanalyzing(true);
     try {
-      await apiFetch(`/sites/${siteId}/intelligence/pipeline`, {
+      await apiFetch(`/sites/${siteId}/intelligence/run-all`, {
         method: 'POST',
         token,
       });
@@ -411,7 +411,7 @@ function TrendCard({
     if (!siteId || !token) return;
     setReanalyzing(true);
     try {
-      await apiFetch(`/sites/${siteId}/intelligence/pipeline`, {
+      await apiFetch(`/sites/${siteId}/intelligence/run-all`, {
         method: 'POST',
         token,
       });

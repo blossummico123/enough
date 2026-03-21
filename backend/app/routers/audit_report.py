@@ -537,12 +537,17 @@ async def _run_audit_pipeline_and_email(
         # Verify pipeline succeeded
         async with pool.acquire() as db:
             crawl = await db.fetchrow(
-                "SELECT status FROM crawl_jobs WHERE site_id = $1", site_id,
+                "SELECT status, error FROM crawl_jobs WHERE site_id = $1", site_id,
             )
             if crawl and crawl["status"] == "failed":
                 raise ValueError(f"Pipeline failed for {domain}")
+            if crawl and crawl["error"]:
+                logger.warning(
+                    "Pipeline completed with partial errors for %s: %s",
+                    domain, crawl["error"][:200],
+                )
 
-        # Generate PDF and email it
+        # Generate PDF and email it (partial data is better than no data)
         async with pool.acquire() as db:
             site = await db.fetchrow("SELECT * FROM sites WHERE id = $1", site_id)
             audit_data = await _build_audit_data_for_site(db, site_id, dict(site))

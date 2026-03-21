@@ -339,7 +339,7 @@ class StripeService:
   </div>
   <h2 style="font-size:18px;">We're sorry to see you go</h2>
   <p>Your Enough subscription has been cancelled. Your data will remain available for 30 days.</p>
-  <p>If this was a mistake, you can resubscribe anytime at <a href="https://enough.app" style="color:#16a34a;">enough.app/pricing</a>.</p>
+  <p>If this was a mistake, you can resubscribe anytime at <a href="https://enough.app" style="color:#16a34a;">enough.app</a>.</p>
   <p style="color:#94a3b8;font-size:13px;">Your content ecosystem won't monitor itself — we'll be here when you're ready to come back.</p>
   <div style="text-align:center;margin-top:24px;color:#94a3b8;font-size:12px;">
     Enough — Publish Less. Grow More.
@@ -494,7 +494,7 @@ class StripeService:
                     "from": settings.email_from,
                     "to": [email],
                     "subject": "Your content health has gone unchecked for a week",
-                    "html": """
+                    "html": f"""
 <div style="max-width:600px;margin:0 auto;font-family:'Inter',system-ui,sans-serif;background:#ffffff;color:#1e293b;border:1px solid #e5e7eb;padding:32px;border-radius:12px;">
   <div style="text-align:center;margin-bottom:24px;">
     <h1 style="color:#16a34a;font-size:24px;margin:0;">Enough</h1>
@@ -506,7 +506,7 @@ class StripeService:
     <a href="https://enough.app" style="display:inline-block;background:#16a34a;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Resubscribe &rarr;</a>
   </div>
   <div style="text-align:center;margin-top:24px;color:#94a3b8;font-size:12px;">
-    <a href="https://enough.app/unsubscribe" style="color:#94a3b8;">Unsubscribe</a>
+    <a href="https://enough.app/unsubscribe?email={email}" style="color:#94a3b8;">Unsubscribe</a>
     &bull; Enough — Publish Less. Grow More.
   </div>
 </div>""",
@@ -529,7 +529,7 @@ class StripeService:
                     "from": settings.email_from,
                     "to": [email],
                     "subject": "Here's what changed on your blog since you left",
-                    "html": """
+                    "html": f"""
 <div style="max-width:600px;margin:0 auto;font-family:'Inter',system-ui,sans-serif;background:#ffffff;color:#1e293b;border:1px solid #e5e7eb;padding:32px;border-radius:12px;">
   <div style="text-align:center;margin-bottom:24px;">
     <h1 style="color:#16a34a;font-size:24px;margin:0;">Enough</h1>
@@ -548,7 +548,7 @@ class StripeService:
     <a href="https://enough.app" style="display:inline-block;background:#16a34a;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Resubscribe &rarr;</a>
   </div>
   <div style="text-align:center;margin-top:24px;color:#94a3b8;font-size:12px;">
-    <a href="https://enough.app/unsubscribe" style="color:#94a3b8;">Unsubscribe</a>
+    <a href="https://enough.app/unsubscribe?email={email}" style="color:#94a3b8;">Unsubscribe</a>
     &bull; Enough
   </div>
 </div>""",
@@ -571,7 +571,7 @@ class StripeService:
                     "from": settings.email_from,
                     "to": [email],
                     "subject": "Final offer: 30% off Enough for 3 months",
-                    "html": """
+                    "html": f"""
 <div style="max-width:600px;margin:0 auto;font-family:'Inter',system-ui,sans-serif;background:#ffffff;color:#1e293b;border:1px solid #e5e7eb;padding:32px;border-radius:12px;">
   <div style="text-align:center;margin-bottom:24px;">
     <h1 style="color:#16a34a;font-size:24px;margin:0;">Enough</h1>
@@ -587,7 +587,7 @@ class StripeService:
     <a href="https://enough.app?coupon=COMEBACK30" style="display:inline-block;background:#16a34a;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Claim 30% Off &rarr;</a>
   </div>
   <div style="text-align:center;margin-top:24px;color:#94a3b8;font-size:12px;">
-    <a href="https://enough.app/unsubscribe" style="color:#94a3b8;">Unsubscribe</a>
+    <a href="https://enough.app/unsubscribe?email={email}" style="color:#94a3b8;">Unsubscribe</a>
     &bull; Enough
   </div>
 </div>""",

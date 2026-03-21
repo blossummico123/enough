@@ -72,7 +72,7 @@ async def og_image(
 
     # Health colour
     if health >= 70:
-        health_color = "#22c55e"
+        health_color = "#16a34a"
     elif health >= 45:
         health_color = "#f59e0b"
     else:
@@ -100,11 +100,11 @@ async def og_image(
   <rect width="1200" height="630" fill="url(#bg)"/>
 
   <!-- Accent bar -->
-  <rect x="0" y="0" width="6" height="630" fill="#22c55e"/>
+  <rect x="0" y="0" width="6" height="630" fill="#16a34a"/>
 
   <!-- Brand -->
   <text x="60" y="66" font-family="system-ui, sans-serif" font-size="22" font-weight="700"
-        fill="#22c55e" letter-spacing="4">ENOUGH</text>
+        fill="#16a34a" letter-spacing="4">ENOUGH</text>
   <text x="168" y="66" font-family="system-ui, sans-serif" font-size="16" fill="#64748b">
     Content Intelligence</text>
 
