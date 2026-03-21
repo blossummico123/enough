@@ -22,6 +22,9 @@ from app.models.schemas import (
     SubscriptionResponse,
     PortalResponse,
     TaskTriggerResponse,
+    UsageResponse,
+    InvoiceResponse,
+    CancelRequest,
 )
 
 logger = logging.getLogger(__name__)
@@ -372,3 +375,55 @@ async def get_billing_portal(
         raise HTTPException(status_code=400, detail=str(e))
 
     return PortalResponse(portal_url=url)
+
+
+@router.get("/billing/usage", response_model=UsageResponse)
+async def get_billing_usage(
+    user_id: Annotated[str, Depends(get_current_user_id)],
+    db: Annotated[asyncpg.Connection, Depends(get_db)],
+):
+    """Get current usage (posts analyzed vs tier limit)."""
+    from app.services.stripe_service import StripeService
+
+    service = StripeService()
+    usage = await service.get_usage(db, user_id)
+    return UsageResponse(**usage)
+
+
+@router.get("/billing/invoices", response_model=list[InvoiceResponse])
+async def get_billing_invoices(
+    user_id: Annotated[str, Depends(get_current_user_id)],
+    db: Annotated[asyncpg.Connection, Depends(get_db)],
+):
+    """Get invoice history from Stripe."""
+    from app.services.stripe_service import StripeService
+
+    service = StripeService()
+    try:
+        invoices = await service.get_invoices(db, user_id)
+    except Exception as e:
+        logger.error("Failed to fetch invoices: %s", e)
+        return []
+
+    return [InvoiceResponse(**inv) for inv in invoices]
+
+
+@router.post("/billing/cancel")
+async def cancel_billing_subscription(
+    body: CancelRequest,
+    user_id: Annotated[str, Depends(get_current_user_id)],
+    db: Annotated[asyncpg.Connection, Depends(get_db)],
+):
+    """Cancel subscription at end of billing period."""
+    from app.services.stripe_service import StripeService
+
+    service = StripeService()
+    try:
+        result = await service.cancel_subscription(db, user_id, body.reason)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("Cancel subscription failed: %s", e)
+        raise HTTPException(status_code=500, detail="Failed to cancel subscription")
+
+    return result

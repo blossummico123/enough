@@ -474,6 +474,25 @@ class PortalResponse(BaseModel):
     portal_url: str
 
 
+class UsageResponse(BaseModel):
+    """Current post usage vs tier limit."""
+    posts_analyzed: int
+    posts_limit: int
+
+
+class InvoiceResponse(BaseModel):
+    """A single Stripe invoice."""
+    id: str
+    date: str
+    amount: int
+    status: str
+
+
+class CancelRequest(BaseModel):
+    """Cancellation request with optional reason."""
+    reason: str | None = None
+
+
 # ──────────────────────────── Phase 6: Living Ecosystem ────────────────────────────
 
 # ──────────────────────────── Phase 2: Problem Detection ────────────────────────────

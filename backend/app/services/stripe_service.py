@@ -652,3 +652,105 @@ class StripeService:
             return count < limits["consolidations_per_month"]
 
         return True
+
+    # ──────────────── Billing page helpers ────────────────
+
+    async def get_usage(
+        self, db: asyncpg.Connection, user_id: str
+    ) -> dict:
+        """Get post usage count vs tier limit for the user."""
+        sub = await self.get_subscription(db, user_id)
+        tier = sub["tier"]
+
+        # Resolve effective tier (mirrors check_usage_limits logic)
+        if tier == "past_due":
+            from datetime import datetime, timezone
+            grace_row = await db.fetchrow(
+                "SELECT grace_period_ends_at FROM profiles WHERE id = $1::uuid",
+                user_id,
+            )
+            grace_ends = grace_row["grace_period_ends_at"] if grace_row else None
+            if grace_ends and grace_ends > datetime.now(timezone.utc):
+                tier = "growth"
+            else:
+                tier = "free"
+        if tier == "paused":
+            tier = "free"
+
+        limits = TIER_LIMITS.get(tier, TIER_LIMITS["free"])
+
+        count = await db.fetchval(
+            """SELECT COUNT(*) FROM posts p
+               JOIN sites s ON s.id = p.site_id
+               WHERE s.user_id = $1""",
+            user_id,
+        ) or 0
+
+        return {
+            "posts_analyzed": count,
+            "posts_limit": limits["posts"],
+        }
+
+    async def get_invoices(
+        self, db: asyncpg.Connection, user_id: str
+    ) -> list[dict]:
+        """Fetch invoice history from Stripe for the user."""
+        profile = await db.fetchrow(
+            "SELECT stripe_customer_id FROM profiles WHERE id = $1::uuid",
+            user_id,
+        )
+        if not profile or not profile["stripe_customer_id"]:
+            return []
+
+        from datetime import datetime, timezone
+
+        invoices = await asyncio.to_thread(
+            stripe.Invoice.list,
+            customer=profile["stripe_customer_id"],
+            limit=24,
+        )
+
+        return [
+            {
+                "id": inv["id"],
+                "date": datetime.fromtimestamp(
+                    inv["created"], tz=timezone.utc
+                ).isoformat(),
+                "amount": inv["amount_paid"],
+                "status": inv["status"],
+            }
+            for inv in invoices.get("data", [])
+        ]
+
+    async def cancel_subscription(
+        self, db: asyncpg.Connection, user_id: str, reason: str | None = None
+    ) -> dict:
+        """Cancel subscription at period end (not immediate)."""
+        profile = await db.fetchrow(
+            "SELECT stripe_subscription_id, stripe_customer_id FROM profiles WHERE id = $1::uuid",
+            user_id,
+        )
+        if not profile or not profile["stripe_subscription_id"]:
+            raise ValueError("No active subscription to cancel")
+
+        sub = await asyncio.to_thread(
+            stripe.Subscription.modify,
+            profile["stripe_subscription_id"],
+            cancel_at_period_end=True,
+            metadata={"cancel_reason": reason or "not_specified"},
+        )
+
+        if profile["stripe_customer_id"] and reason:
+            await asyncio.to_thread(
+                stripe.Customer.modify,
+                profile["stripe_customer_id"],
+                metadata={"last_cancel_reason": reason},
+            )
+
+        logger.info(
+            "Subscription %s set to cancel at period end (reason: %s)",
+            profile["stripe_subscription_id"],
+            reason,
+        )
+
+        return {"cancelled": True, "cancel_at": sub.get("current_period_end")}
