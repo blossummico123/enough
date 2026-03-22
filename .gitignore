@@ -52,3 +52,15 @@ frontend/out/
 *.key
 *.cert
 *.secret
+
+# Task & planning files
+TASK.md
+TASK-PHASE2.md
+TASK-PHASE3.md
+TASK-PHASE4.md
+TASK-PHASE5.md
+TASK-PHASE6.md
+TASK-PHASE7.md
+TASK-HARDENING.md
+ECOSYSTEM-BIBLE.md
+ecosystem-preview.png

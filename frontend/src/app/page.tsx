@@ -540,7 +540,7 @@ function LandingPage() {
       <footer className="border-t border-[#23262F] py-8 px-6">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-[12px] text-[#9BA1AD]">
-            &copy; 2025 Enough. All rights reserved.
+            &copy; 2026 Enough. All rights reserved.
           </span>
           <div className="flex items-center gap-6 text-[12px] text-[#9BA1AD]">
             <Link href="/terms" className="hover:text-[#E8EAED] transition-colors">
