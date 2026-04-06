@@ -19,7 +19,7 @@ trafilatura==2.0.0
 readability-lxml==0.8.1
 
 # Google APIs
-google-analytics-data==0.18.16
+google-analytics-data==0.21.0
 google-api-python-client==2.159.0
 google-auth==2.37.0
 google-auth-oauthlib==1.2.1
