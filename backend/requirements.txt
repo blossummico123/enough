@@ -46,7 +46,7 @@ resend>=2.5.0
 # Phase 2: Intelligence Engine
 hdbscan==0.8.40
 umap-learn==0.5.7
-scikit-learn==1.6.1
+scikit-learn==1.8.0
 numpy==2.2.2
 anthropic==0.42.0
 networkx
